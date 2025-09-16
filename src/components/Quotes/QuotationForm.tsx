@@ -1007,7 +1007,7 @@ const QuotationForm: React.FC = () => {
           <div className="flex flex-col md:flex-row gap-4">
             <button
               type="submit"
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 flex items-center justify-center disabled:opacity-50 no-print"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 flex items-center justify-center disabled:opacity-50"
             >
               <CheckCircle className="mr-2" size={20} />
               Create Quotation
@@ -1015,15 +1015,15 @@ const QuotationForm: React.FC = () => {
             
             <button
               type="button"
-              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 no-print"
-              onClick={handlePrint}
+              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200"
+              onClick={() => window.print()}
             >
               Print Quotation
             </button>
             
             <button
               type="button"
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 no-print"
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200"
               onClick={() => {
                 const dataStr = JSON.stringify(formData, null, 2);
                 const dataBlob = new Blob([dataStr], { type: 'application/json' });
