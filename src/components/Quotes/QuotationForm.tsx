@@ -1,0 +1,962 @@
+import React, { useState, useEffect } from 'react';
+import { Calendar, MapPin, Users, Calculator, Plus, Trash2, FileText, CheckCircle, Plane, X } from 'lucide-react';
+
+interface CostItem {
+  id: string;
+  description: string;
+  estimatedPricePerUnit: number;
+  pricePerUnit: number;
+  unit: string;
+  quantityRequired: number;
+  daysRequired: number;
+  subtotal: number;
+  isFixed?: boolean;
+  manualSubtotal?: number;
+}
+
+interface FormData {
+  // Tour Details
+  schoolName: string;
+  partyLeader: string;
+  destination: string;
+  accommodation: string;
+  board: string;
+  dateOutUK: string;
+  dateBackUK: string;
+  numberOfDays: number;
+  numberOfNights: number;
+  pax: number;
+  freePlaces: number;
+  exchangeRate: number;
+  markupAmount: number;
+  
+  // Cost breakdown
+  costItems: CostItem[];
+  
+  // Calculations
+  totalCost: number;
+  netTotal: number;
+  profit: number;
+  pricePerPerson: number;
+  profitPerHead: number;
+  
+  // Currency converter
+  euroAmount: number;
+  gbpAmount: number;
+  
+  // Free place calculation
+  istStaffQty: number;
+}
+
+interface QuotationFormProps {
+  onClose?: () => void;
+}
+
+const QuotationForm: React.FC<QuotationFormProps> = ({ onClose }) => {
+  // Predefined cost items that are always present
+  const predefinedCostItems: CostItem[] = [
+    {
+      id: 'fixed-1',
+      description: 'Flights',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-2',
+      description: 'Coach Costs',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-3',
+      description: 'Train Cost Students',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person Per Day',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-4',
+      description: 'Train Cost Adults',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person Per Day',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-5',
+      description: 'UK Airport Transfers',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person Per Day',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-6',
+      description: 'Ferry Per Crossing',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person Per Day',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-7',
+      description: 'TOMS',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Group',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-8',
+      description: 'Insurance Students',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-9',
+      description: 'Insurance Adults',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-10',
+      description: 'Rep Flight',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-11',
+      description: 'Rep Wages',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-12',
+      description: 'Accommodation',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-13',
+      description: 'Breakfast',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-14',
+      description: 'Lunch',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true 
+    },
+    {
+      id: 'fixed-15',
+      description: 'Dinner',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-16',
+      description: 'Tourist Tax Student',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-17',
+      description: 'Tourist Tax Adult',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    },
+    {
+      id: 'fixed-18',
+      description: 'Local Coach',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+     },
+     {
+      id: 'fixed-19',
+      description: 'Public Transport',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+     },
+     {
+      id: 'fixed-20',
+      description: 'Airport Transfer',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+     },
+     {
+      id: 'fixed-21',
+      description: 'Rep Accommodation',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+     },
+     {
+      id: 'fixed-22',
+      description: 'UK Driver Accommodation',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+     },
+     {
+      id: 'fixed-23',
+      description: 'Local Guide',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0,
+      isFixed: true
+    }
+  ];
+
+  const [formData, setFormData] = useState<FormData>({
+    schoolName: '',
+    partyLeader: '',
+    destination: '',
+    accommodation: '',
+    board: '',
+    dateOutUK: '',
+    dateBackUK: '',
+    numberOfDays: 0,
+    numberOfNights: 0,
+    pax: 0,
+    freePlaces: 0,
+    exchangeRate: 1.18,
+    markupAmount: 0,
+    costItems: predefinedCostItems,
+    totalCost: 0,
+    netTotal: 0,
+    profit: 0,
+    pricePerPerson: 0,
+    profitPerHead: 0,
+    euroAmount: 0,
+    gbpAmount: 0,
+    istStaffQty: 0
+  });
+
+  const unitOptions = [
+    'Per Person',
+    'Per Person Per Day',
+    'Per Crossing',
+    'Per Day',
+    'Per Group',
+    'Single Unit'
+  ];
+
+  // Calculate subtotal for each cost item
+  const calculateSubtotal = (item: CostItem): number => {
+    // For Accommodation item, use manual subtotal if set
+    if (item.id === 'fixed-12' && item.manualSubtotal !== undefined) {
+      return item.manualSubtotal;
+    }
+    return item.pricePerUnit * item.quantityRequired * item.daysRequired;
+  };
+
+  // Update cost item
+  const updateCostItem = (id: string, field: keyof CostItem, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      costItems: prev.costItems.map(item => {
+        if (item.id === id) {
+          const updatedItem = { ...item, [field]: value };
+          
+          // Handle manual subtotal for Accommodation item
+          if (id === 'fixed-12') {
+            if (field === 'subtotal') {
+              updatedItem.manualSubtotal = typeof value === 'number' ? value : parseFloat(value as string) || 0;
+            } else if (field === 'pricePerUnit' || field === 'quantityRequired' || field === 'daysRequired') {
+              // Reset manual subtotal when other fields are changed
+              updatedItem.manualSubtotal = undefined;
+            }
+          }
+          
+          updatedItem.subtotal = calculateSubtotal(updatedItem);
+          return updatedItem;
+        }
+        return item;
+      })
+    }));
+  };
+
+  // Add new cost item
+  const addCostItem = () => {
+    const newItem: CostItem = {
+      id: Date.now().toString(),
+      description: '',
+      estimatedPricePerUnit: 0,
+      pricePerUnit: 0,
+      unit: 'Per Person',
+      quantityRequired: 0,
+      daysRequired: 1,
+      subtotal: 0
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      costItems: [...prev.costItems, newItem]
+    }));
+  };
+
+  // Remove cost item
+  const removeCostItem = (id: string) => {
+    // Only allow removal of non-fixed items
+    const item = formData.costItems.find(item => item.id === id);
+    if (item && !item.isFixed) {
+      setFormData(prev => ({
+        ...prev,
+        costItems: prev.costItems.filter(item => item.id !== id)
+      }));
+    }
+  };
+
+  // Calculate totals
+  useEffect(() => {
+    const totalCost = formData.costItems.reduce((sum, item) => sum + item.subtotal, 0);
+    const netTotal = totalCost + formData.markupAmount;
+    const profit = netTotal - totalCost;
+    const pricePerPerson = formData.pax > 0 ? netTotal / formData.pax : 0;
+    const fullPayingPax = formData.pax - formData.istStaffQty;
+    const profitPerHead = fullPayingPax > 0 ? profit / fullPayingPax : 0;
+
+    setFormData(prev => ({
+      ...prev,
+      totalCost,
+      netTotal,
+      profit,
+      pricePerPerson,
+      profitPerHead
+    }));
+  }, [formData.costItems, formData.markupAmount, formData.pax, formData.istStaffQty]);
+
+  // Calculate EUR amount from GBP
+  useEffect(() => {
+    const euroAmount = formData.gbpAmount * formData.exchangeRate;
+    setFormData(prev => ({
+      ...prev,
+      euroAmount: Math.round(euroAmount * 100) / 100
+    }));
+  }, [formData.gbpAmount, formData.exchangeRate]);
+
+  // Calculate days and nights from dates
+  useEffect(() => {
+    if (formData.dateOutUK && formData.dateBackUK) {
+      const outDate = new Date(formData.dateOutUK);
+      const backDate = new Date(formData.dateBackUK);
+      
+      if (backDate > outDate) {
+        const timeDiff = backDate.getTime() - outDate.getTime();
+        const numberOfDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1; // +1 to include departure day
+        const numberOfNights = numberOfDays - 1;
+        
+        setFormData(prev => ({
+          ...prev,
+          numberOfDays,
+          numberOfNights
+        }));
+      }
+    }
+  }, [formData.dateOutUK, formData.dateBackUK]);
+
+  const handleInputChange = (field: keyof FormData, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Quotation submitted:', formData);
+    alert('Quotation saved successfully!');
+    if (onClose) onClose();
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto p-6 bg-white">
+      {onClose && (
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Create New Quotation</h1>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+      )}
+
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+          <Plane className="mr-3 text-blue-600" size={32} />
+          Educational Tour Quotation
+        </h1>
+        <p className="text-gray-600">Complete this form to generate a comprehensive tour quotation with detailed cost breakdown</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Your Tour Details Section */}
+        <div className="bg-blue-50 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-blue-900 mb-6 flex items-center">
+            <Users className="mr-2" size={24} />
+            Your Tour Details
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">School Name</label>
+              <input
+                type="text"
+                value={formData.schoolName}
+                onChange={(e) => handleInputChange('schoolName', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter school name"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Party Leader</label>
+              <input
+                type="text"
+                value={formData.partyLeader}
+                onChange={(e) => handleInputChange('partyLeader', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter party leader name"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <MapPin className="mr-1" size={16} />
+                Destination
+              </label>
+              <input
+                type="text"
+                value={formData.destination}
+                onChange={(e) => handleInputChange('destination', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="e.g., Paris, France"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Accommodation</label>
+              <input
+                type="text"
+                value={formData.accommodation}
+                onChange={(e) => handleInputChange('accommodation', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="e.g., Hotel Europa"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Board</label>
+              <input
+                type="text"
+                value={formData.board}
+                onChange={(e) => handleInputChange('board', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="e.g., Half Board"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Pax</label>
+              <input
+                type="number"
+                value={formData.pax}
+                onChange={(e) => handleInputChange('pax', parseInt(e.target.value) || 0)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                min="0"
+                placeholder="Total students + teachers"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <Calendar className="mr-1" size={16} />
+                Date Out of UK
+              </label>
+              <input
+                type="date"
+                value={formData.dateOutUK}
+                onChange={(e) => handleInputChange('dateOutUK', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <Calendar className="mr-1" size={16} />
+                Date Back into UK
+              </label>
+              <input
+                type="date"
+                value={formData.dateBackUK}
+                onChange={(e) => handleInputChange('dateBackUK', e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Free Places</label>
+              <input
+                type="number"
+                value={formData.freePlaces}
+                onChange={(e) => handleInputChange('freePlaces', parseInt(e.target.value) || 0)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                min="0"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Number of Days</label>
+              <div className="w-full p-3 bg-gray-100 border border-gray-300 rounded-md text-gray-900 font-medium">
+                {formData.numberOfDays || 0} days
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Number of Nights</label>
+              <div className="w-full p-3 bg-gray-100 border border-gray-300 rounded-md text-gray-900 font-medium">
+                {formData.numberOfNights || 0} nights
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">X/R (GBP to EUR)</label>
+              <input
+                type="number"
+                value={formData.exchangeRate}
+                onChange={(e) => handleInputChange('exchangeRate', parseFloat(e.target.value) || 0)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                step="0.01"
+                min="0"
+                placeholder="1.18"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Markup (£)</label>
+              <input
+                type="number"
+                value={formData.markupAmount}
+                onChange={(e) => handleInputChange('markupAmount', parseFloat(e.target.value) || 0)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                step="0.01"
+                min="0"
+                placeholder="500"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">IST Staff QTY</label>
+              <input
+                type="number"
+                value={formData.istStaffQty}
+                onChange={(e) => handleInputChange('istStaffQty', parseInt(e.target.value) || 0)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                min="0"
+                placeholder="2"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Cost Breakdown Section */}
+        <div className="bg-green-50 rounded-lg p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-green-900 flex items-center">
+              <Calculator className="mr-2" size={24} />
+              Cost Breakdown
+            </h2>
+            <button
+              type="button"
+              onClick={addCostItem}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center transition-colors duration-200"
+            >
+              <Plus className="mr-1" size={16} />
+              Add Item
+            </button>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full bg-white rounded-lg shadow-sm border border-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Item Description</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Estimated Price Per Unit (£)</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Actual Price Per Unit (£)</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Unit</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Qty Required</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Days Required</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Subtotal (£)</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-700 border-b">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.costItems.map((item, index) => (
+                  <tr key={item.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="px-4 py-3 border-b">
+                      {item.isFixed ? (
+                        <div className="p-2 font-medium text-gray-700 bg-gray-50 rounded">
+                          {item.description}
+                        </div>
+                      ) : (
+                        <input
+                          type="text"
+                          value={item.description}
+                          onChange={(e) => updateCostItem(item.id, 'description', e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                          placeholder="e.g., Flight, Coach, Entrance"
+                        />
+                      )}
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      <input
+                        type="number"
+                        value={item.estimatedPricePerUnit}
+                        onChange={(e) => updateCostItem(item.id, 'estimatedPricePerUnit', parseFloat(e.target.value) || 0)}
+                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        step="0.01"
+                        min="0"
+                      />
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      <input
+                        type="number"
+                        value={item.pricePerUnit}
+                        onChange={(e) => updateCostItem(item.id, 'pricePerUnit', parseFloat(e.target.value) || 0)}
+                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        step="0.01"
+                        min="0"
+                      />
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      {item.isFixed ? (
+                        <div className="p-2 text-gray-700 bg-gray-50 rounded">
+                          {item.unit}
+                        </div>
+                      ) : (
+                        <select
+                          value={item.unit}
+                          onChange={(e) => updateCostItem(item.id, 'unit', e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        >
+                          {unitOptions.map(unit => (
+                            <option key={unit} value={unit}>{unit}</option>
+                          ))}
+                        </select>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      <input
+                        type="number"
+                        value={item.quantityRequired}
+                        onChange={(e) => updateCostItem(item.id, 'quantityRequired', parseInt(e.target.value) || 0)}
+                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        min="0"
+                      />
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      <input
+                        type="number"
+                        value={item.daysRequired}
+                        onChange={(e) => updateCostItem(item.id, 'daysRequired', parseInt(e.target.value) || 1)}
+                        className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        min="1"
+                      />
+                    </td>
+                    <td className="px-4 py-3 border-b">
+                      {item.id === 'fixed-12' ? (
+                        <input
+                          type="number"
+                          value={item.manualSubtotal !== undefined ? item.manualSubtotal : item.subtotal}
+                          onChange={(e) => updateCostItem(item.id, 'subtotal', parseFloat(e.target.value) || 0)}
+                          className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent font-semibold text-green-600"
+                          step="0.01"
+                          min="0"
+                        />
+                      ) : (
+                        <div className="font-semibold text-green-600">
+                          £{item.subtotal.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 border-b text-center">
+                      {!item.isFixed && (
+                        <button
+                          type="button"
+                          onClick={() => removeCostItem(item.id)}
+                          className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Calculations Section */}
+        <div className="bg-yellow-50 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-yellow-900 mb-6 flex items-center">
+            <Calculator className="mr-2" size={24} />
+            Calculations
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white p-4 rounded-lg border border-yellow-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Total Cost</label>
+              <div className="text-2xl font-bold text-gray-900">
+                £{formData.totalCost.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border border-yellow-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Net Total (with markup)</label>
+              <div className="text-2xl font-bold text-blue-600">
+                £{formData.netTotal.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border border-yellow-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Profit</label>
+              <div className="text-2xl font-bold text-emerald-600">
+                £{formData.profit.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border border-yellow-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Person</label>
+              <div className="text-2xl font-bold text-green-600">
+                £{formData.pricePerPerson.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            <div className="bg-white p-4 rounded-lg border border-yellow-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Calculated Free Places</label>
+              <div className="text-2xl font-bold text-purple-600">
+                {formData.calculatedFreePlaces}
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border border-yellow-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Profit Per Head</label>
+              <div className="text-2xl font-bold text-orange-600">
+                £{formData.profitPerHead.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Currency Converter Section */}
+        <div className="bg-purple-50 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-purple-900 mb-6 flex items-center">
+            <Calculator className="mr-2" size={24} />
+            Currency Converter
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white p-4 rounded-lg border border-purple-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Pounds (£)</label>
+              <input
+                type="number"
+                value={formData.gbpAmount}
+                onChange={(e) => handleInputChange('gbpAmount', parseFloat(e.target.value) || 0)}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+              />
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border border-purple-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Exchange Rate (GBP to EUR)</label>
+              <div className="text-lg font-semibold text-gray-900 p-3 bg-gray-50 rounded-md">
+                {formData.exchangeRate}
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border border-purple-200">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Euros (€)</label>
+              <div className="text-lg font-semibold text-purple-600 p-3 bg-gray-50 rounded-md">
+                €{formData.euroAmount.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Summary and Actions */}
+        <div className="bg-gray-50 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <FileText className="mr-2" size={24} />
+            Quotation Summary
+          </h2>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="text-center">
+              <div className="text-sm text-gray-600">Total Participants</div>
+              <div className="text-xl font-bold text-gray-900">{formData.pax}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm text-gray-600">IST Staff</div>
+              <div className="text-xl font-bold text-green-600">{formData.istStaffQty}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm text-gray-600">Net Total</div>
+              <div className="text-xl font-bold text-blue-600">£{formData.netTotal.toLocaleString('en-GB', { minimumFractionDigits: 2 })}</div>
+            </div>
+            <div className="text-center">
+              <div className="text-sm text-gray-600">Price Per Person</div>
+              <div className="text-xl font-bold text-purple-600">£{formData.pricePerPerson.toLocaleString('en-GB', { minimumFractionDigits: 2 })}</div>
+            </div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row gap-4">
+            <button
+              type="submit"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 flex items-center justify-center"
+            >
+              <CheckCircle className="mr-2" size={20} />
+              Save Quotation
+            </button>
+            
+            <button
+              type="button"
+              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200"
+              onClick={() => window.print()}
+            >
+              Print Quotation
+            </button>
+            
+            <button
+              type="button"
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200"
+              onClick={() => {
+                const dataStr = JSON.stringify(formData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `quotation-${formData.schoolName || 'unnamed'}-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+              }}
+            >
+              Export Data
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default QuotationForm;
