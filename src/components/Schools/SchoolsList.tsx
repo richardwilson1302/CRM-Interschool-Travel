@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { School, Mail, Phone, Globe, MapPin, Plus, Search, Edit, Upload } from 'lucide-react';
 import SchoolForm from '../Forms/SchoolForm';
@@ -94,7 +95,12 @@ export default function SchoolsList() {
                 <div className="flex-1">
                   <div className="flex items-center">
                     <School className="h-5 w-5 text-blue-600 mr-2" />
-                    <h3 className="text-lg font-semibold text-gray-900">{school.name}</h3>
+                    <Link
+                      to={`/schools/${school.id}`}
+                      className="text-lg font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                    >
+                      {school.name}
+                    </Link>
                   </div>
                   
                   {school.contact_person && (

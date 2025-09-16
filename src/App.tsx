@@ -1,10 +1,15 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DataProvider } from './contexts/DataContext';
 import Login from './components/Auth/Login';
 import Dashboard from './components/Dashboard/Dashboard';
 import Layout from './components/Layout/Layout';
+import SchoolDetail from './components/Schools/SchoolDetail';
+import TripDetail from './components/Trips/TripDetail';
+import BookingDetail from './components/Bookings/BookingDetail';
+import SupplierDetail from './components/Suppliers/SupplierDetail';
 
 function ErrorFallback({error, resetErrorBoundary}: {error: Error, resetErrorBoundary: () => void}) {
   return (
@@ -40,9 +45,15 @@ function AppContent() {
 
   return (
     <DataProvider>
-      <Layout>
-        <Dashboard />
-      </Layout>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout><Dashboard /></Layout>} />
+          <Route path="/schools/:id" element={<SchoolDetail />} />
+          <Route path="/trips/:id" element={<TripDetail />} />
+          <Route path="/bookings/:id" element={<BookingDetail />} />
+          <Route path="/suppliers/:id" element={<SupplierDetail />} />
+        </Routes>
+      </BrowserRouter>
     </DataProvider>
   );
 }

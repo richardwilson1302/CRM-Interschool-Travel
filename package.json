@@ -3,7 +3,14 @@
   "private": true,
   "version": "1.0.0",
   "description": "A comprehensive CRM system for educational travel companies",
-  "keywords": ["crm", "education", "travel", "booking", "react", "typescript"],
+  "keywords": [
+    "crm",
+    "education",
+    "travel",
+    "booking",
+    "react",
+    "typescript"
+  ],
   "author": "Your Name",
   "license": "MIT",
   "repository": {
@@ -23,7 +30,8 @@
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-error-boundary": "^6.0.0"
+    "react-error-boundary": "^6.0.0",
+    "react-router-dom": "^7.9.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
