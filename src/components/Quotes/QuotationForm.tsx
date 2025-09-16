@@ -874,7 +874,7 @@ const QuotationForm: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => removeCostItem(item.id)}
-                          className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                          className="text-red-600 hover:text-red-800 transition-colors duration-200 no-print"
                         >
                           <Trash2 size={16} />
                         </button>
