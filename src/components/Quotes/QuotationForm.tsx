@@ -942,13 +942,13 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Currency Converter Section */}
-        <div className="bg-purple-50 rounded-lg p-6 print-section">
-          <h2 className="text-xl font-bold text-purple-900 mb-6 flex items-center print-section-title">
+        <div className="bg-purple-50 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-purple-900 mb-6 flex items-center">
             <Calculator className="mr-2" size={24} />
             Currency Converter
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print-grid">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white p-4 rounded-lg border border-purple-200">
               <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Pounds (£)</label>
               <input
@@ -979,13 +979,13 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Summary and Actions */}
-        <div className="bg-gray-50 rounded-lg p-6 print-section">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center print-section-title">
+        <div className="bg-gray-50 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
             <FileText className="mr-2" size={24} />
             Quotation Summary
           </h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 print-summary-grid">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="text-center">
               <div className="text-sm text-gray-600">Total Participants</div>
               <div className="text-xl font-bold text-gray-900">{formData.pax}</div>
