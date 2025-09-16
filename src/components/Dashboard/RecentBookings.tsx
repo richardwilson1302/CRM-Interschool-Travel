@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { Calendar, Users, Phone, Mail, MapPin, ChevronDown, ChevronRight } from 'lucide-react';
 import ExcursionStatus from './ExcursionStatus';
@@ -65,12 +66,12 @@ export default function RecentBookings() {
                     <tr className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <button
-                          onClick={() => setEditingBookingId(booking.id)}
-                          className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left"
+                        <Link
+                          to={`/bookings/${booking.id}`}
+                          className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
                         >
                           {booking.school?.name || 'Unknown School'}
-                        </button>
+                        </Link>
                         <div className="text-sm text-gray-500 flex items-center">
                           <MapPin className="h-3 w-3 mr-1" />
                           {booking.trip?.destination || 'Unknown Trip'}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { MapPin, Calendar, Users, DollarSign, Plus, Search, Clock, Edit, Activity, Trash2 } from 'lucide-react';
 import TripForm from '../Forms/TripForm';
@@ -110,7 +111,12 @@ export default function TripsList() {
               <div key={trip.id} className="bg-white shadow rounded-lg p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">{trip.title}</h3>
+                    <Link
+                      to={`/trips/${trip.id}`}
+                      className="text-lg font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                    >
+                      {trip.title}
+                    </Link>
                     <div className="flex items-center mt-1 text-sm text-gray-600">
                       <MapPin className="h-4 w-4 mr-1" />
                       {trip.destination}

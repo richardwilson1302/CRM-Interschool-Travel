@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
 import { Calendar, Users, Phone, Mail, MapPin, Plus, Search, DollarSign, Edit } from 'lucide-react';
 import BookingForm from '../Forms/BookingForm';
@@ -107,12 +108,12 @@ export default function BookingsList() {
             <div key={booking.id} className="bg-white shadow rounded-lg p-6 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <button
-                    onClick={() => setEditingBookingId(booking.id)}
-                    className="text-lg font-semibold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer text-left"
+                  <Link
+                    to={`/bookings/${booking.id}`}
+                    className="text-lg font-semibold text-blue-600 hover:text-blue-800 hover:underline"
                   >
                     {booking.school?.name || 'Unknown School'}
-                  </button>
+                  </Link>
                   <div className="flex items-center mt-1 text-sm text-gray-600">
                     <MapPin className="h-4 w-4 mr-1" />
                     {booking.trip?.destination || 'Unknown Destination'}
