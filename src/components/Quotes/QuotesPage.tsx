@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Plus, X } from 'lucide-react';
+import { FileText, Plus, Search, X } from 'lucide-react';
 import QuotationForm from './QuotationForm';
 import { useData } from '../../contexts/DataContext';
 
