@@ -2,6 +2,112 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, Users, Calculator, Plus, Trash2, FileText, CheckCircle, Plane, X } from 'lucide-react';
 import type { CostItem } from '../../types';
 
+// Print styles for quotations
+const printStyles = `
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    
+    .quotation-print-area,
+    .quotation-print-area * {
+      visibility: visible;
+    }
+    
+    .quotation-print-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      background: white;
+      padding: 20px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    
+    .print-page-break {
+      page-break-before: always;
+    }
+    
+    .print-no-break {
+      page-break-inside: avoid;
+    }
+    
+    .print-header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .print-section {
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+    
+    .print-section-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 5px;
+    }
+    
+    .print-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    
+    .print-table th,
+    .print-table td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: left;
+      font-size: 11px;
+    }
+    
+    .print-table th {
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+    
+    .print-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .print-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .print-summary-item {
+      text-align: center;
+      border: 1px solid #000;
+      padding: 10px;
+    }
+    
+    .print-summary-label {
+      font-size: 10px;
+      margin-bottom: 5px;
+    }
+    
+    .print-summary-value {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    
+    .no-print {
+      display: none !important;
+    }
+  }
+`;
+
 interface FormData {
   // Tour Details
   schoolName: string;
@@ -456,10 +562,17 @@ const QuotationForm: React.FC = () => {
     alert('Quotation created successfully! (Demo mode - not saved to database)');
   };
 
+  // Enhanced print function
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-white">
+    <>
+      <style>{printStyles}</style>
+      <div className="max-w-7xl mx-auto p-6 bg-white quotation-print-area">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center print-header">
           <Plane className="mr-3 text-blue-600" size={32} />
           Educational Tour Quotation
         </h1>
@@ -468,13 +581,13 @@ const QuotationForm: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Your Tour Details Section */}
-        <div className="bg-blue-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-blue-900 mb-6 flex items-center">
+        <div className="bg-blue-50 rounded-lg p-6 print-section">
+          <h2 className="text-xl font-bold text-blue-900 mb-6 flex items-center print-section-title">
             <Users className="mr-2" size={24} />
             Your Tour Details
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 print-grid">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">School Name</label>
               <input
@@ -637,16 +750,16 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Cost Breakdown Section */}
-        <div className="bg-green-50 rounded-lg p-6">
+        <div className="bg-green-50 rounded-lg p-6 print-section">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-green-900 flex items-center">
+            <h2 className="text-xl font-bold text-green-900 flex items-center print-section-title">
               <Calculator className="mr-2" size={24} />
               Cost Breakdown
             </h2>
             <button
               type="button"
               onClick={addCostItem}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center transition-colors duration-200"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center transition-colors duration-200 no-print"
             >
               <Plus className="mr-1" size={16} />
               Add Item
@@ -654,7 +767,7 @@ const QuotationForm: React.FC = () => {
           </div>
           
           <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-lg shadow-sm border border-gray-200">
+            <table className="w-full bg-white rounded-lg shadow-sm border border-gray-200 print-table">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Item Description</th>
@@ -761,7 +874,7 @@ const QuotationForm: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => removeCostItem(item.id)}
-                          className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                          className="text-red-600 hover:text-red-800 transition-colors duration-200 no-print"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -775,13 +888,13 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Calculations Section */}
-        <div className="bg-yellow-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-yellow-900 mb-6 flex items-center">
+        <div className="bg-yellow-50 rounded-lg p-6 print-section">
+          <h2 className="text-xl font-bold text-yellow-900 mb-6 flex items-center print-section-title">
             <Calculator className="mr-2" size={24} />
             Calculations
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 print-summary-grid">
             <div className="bg-white p-4 rounded-lg border border-yellow-200">
               <label className="block text-sm font-medium text-gray-700 mb-2">Total Cost</label>
               <div className="text-2xl font-bold text-gray-900">
@@ -829,13 +942,13 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Currency Converter Section */}
-        <div className="bg-purple-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-purple-900 mb-6 flex items-center">
+        <div className="bg-purple-50 rounded-lg p-6 print-section">
+          <h2 className="text-xl font-bold text-purple-900 mb-6 flex items-center print-section-title">
             <Calculator className="mr-2" size={24} />
             Currency Converter
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print-grid">
             <div className="bg-white p-4 rounded-lg border border-purple-200">
               <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Pounds (£)</label>
               <input
@@ -866,13 +979,13 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Summary and Actions */}
-        <div className="bg-gray-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+        <div className="bg-gray-50 rounded-lg p-6 print-section">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center print-section-title">
             <FileText className="mr-2" size={24} />
             Quotation Summary
           </h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 print-summary-grid">
             <div className="text-center">
               <div className="text-sm text-gray-600">Total Participants</div>
               <div className="text-xl font-bold text-gray-900">{formData.pax}</div>
@@ -894,7 +1007,7 @@ const QuotationForm: React.FC = () => {
           <div className="flex flex-col md:flex-row gap-4">
             <button
               type="submit"
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 flex items-center justify-center disabled:opacity-50"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 flex items-center justify-center disabled:opacity-50 no-print"
             >
               <CheckCircle className="mr-2" size={20} />
               Create Quotation
@@ -902,15 +1015,15 @@ const QuotationForm: React.FC = () => {
             
             <button
               type="button"
-              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200"
-              onClick={() => window.print()}
+              className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 no-print"
+              onClick={handlePrint}
             >
               Print Quotation
             </button>
             
             <button
               type="button"
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200"
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 no-print"
               onClick={() => {
                 const dataStr = JSON.stringify(formData, null, 2);
                 const dataBlob = new Blob([dataStr], { type: 'application/json' });
@@ -928,6 +1041,7 @@ const QuotationForm: React.FC = () => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 
