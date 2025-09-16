@@ -71,8 +71,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         excursionsResponse,
         activitiesResponse,
         suppliersResponse,
-        bookingExcursionsResponse,
-        quotationsResponse
+        bookingExcursionsResponse
       ] = await Promise.all([
         supabase.from('schools').select('*').order('name'),
         supabase.from('trips').select('*').order('departure_date'),
@@ -93,9 +92,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             *,
             supplier:suppliers(*)
           )
-        `),
-        // Handle quotations table that might not exist yet
-        supabase.from('quotations').select('*').order('created_at', { ascending: false })
+        `)
       ]);
 
       if (schoolsResponse.error) throw schoolsResponse.error;
@@ -105,20 +102,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (activitiesResponse.error) throw activitiesResponse.error;
       if (suppliersResponse.error) throw suppliersResponse.error;
       if (bookingExcursionsResponse.error) throw bookingExcursionsResponse.error;
-      
-      // Handle quotations table error gracefully
-      let quotationsData = [];
-      if (quotationsResponse.error) {
-        if (quotationsResponse.error.code === 'PGRST205' || 
-            quotationsResponse.error.message?.includes('Could not find the table')) {
-          console.warn('Quotations table not found - this is expected if you haven\'t run the migration yet');
-          quotationsData = [];
-        } else {
-          throw quotationsResponse.error;
-        }
-      } else {
-        quotationsData = quotationsResponse.data || [];
-      }
 
       console.log('Data fetch results:');
       console.log('- Schools:', schoolsResponse.data?.length || 0);
@@ -128,7 +111,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       console.log('- Activities:', activitiesResponse.data?.length || 0);
       console.log('- Suppliers:', suppliersResponse.data?.length || 0);
       console.log('- Booking Excursions:', bookingExcursionsResponse.data?.length || 0);
-      console.log('- Quotations:', quotationsResponse.data?.length || 0);
 
       console.log('Fetched booking excursions:', bookingExcursionsResponse.data?.length || 0);
       console.log('All booking excursions data:', bookingExcursionsResponse.data);
@@ -158,7 +140,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       setExcursions(excursionsResponse.data);
       setActivities(activitiesResponse.data);
       setSuppliers(suppliersResponse.data);
-      setQuotations(quotationsData);
+      setQuotations([]); // Set empty array since we're not fetching quotations
     } catch (error) {
       console.error('Error fetching data:', error);
       console.error('Full error object:', error);
