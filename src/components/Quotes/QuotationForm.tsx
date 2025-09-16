@@ -874,7 +874,7 @@ const QuotationForm: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => removeCostItem(item.id)}
-                          className="text-red-600 hover:text-red-800 transition-colors duration-200 no-print"
+                          className="text-red-600 hover:text-red-800 transition-colors duration-200"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -888,13 +888,13 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Calculations Section */}
-        <div className="bg-yellow-50 rounded-lg p-6 print-section">
-          <h2 className="text-xl font-bold text-yellow-900 mb-6 flex items-center print-section-title">
+        <div className="bg-yellow-50 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-yellow-900 mb-6 flex items-center">
             <Calculator className="mr-2" size={24} />
             Calculations
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 print-summary-grid">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="bg-white p-4 rounded-lg border border-yellow-200">
               <label className="block text-sm font-medium text-gray-700 mb-2">Total Cost</label>
               <div className="text-2xl font-bold text-gray-900">
@@ -942,13 +942,13 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Currency Converter Section */}
-        <div className="bg-purple-50 rounded-lg p-6 print-section">
-          <h2 className="text-xl font-bold text-purple-900 mb-6 flex items-center print-section-title">
+        <div className="bg-purple-50 rounded-lg p-6">
+          <h2 className="text-xl font-bold text-purple-900 mb-6 flex items-center">
             <Calculator className="mr-2" size={24} />
             Currency Converter
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print-grid">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white p-4 rounded-lg border border-purple-200">
               <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Pounds (£)</label>
               <input
