@@ -47,15 +47,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       // Test basic connection first
       const { data: testData, error: testError } = await supabase
         .from('schools')
-        .select('count')
+        .select('*')
         .limit(1);
         
       if (testError) {
         console.error('Supabase connection test failed:', testError);
+        console.error('Error details:', testError.message, testError.details, testError.hint);
         throw new Error(`Database connection failed: ${testError.message}`);
       }
       
-      console.log('Supabase connection test successful');
+      console.log('Supabase connection test successful, found:', testData?.length || 0, 'test records');
 
       // Fetch all data in parallel
       const [
@@ -97,6 +98,15 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (suppliersResponse.error) throw suppliersResponse.error;
       if (bookingExcursionsResponse.error) throw bookingExcursionsResponse.error;
 
+      console.log('Data fetch results:');
+      console.log('- Schools:', schoolsResponse.data?.length || 0);
+      console.log('- Trips:', tripsResponse.data?.length || 0);
+      console.log('- Bookings:', bookingsResponse.data?.length || 0);
+      console.log('- Excursions:', excursionsResponse.data?.length || 0);
+      console.log('- Activities:', activitiesResponse.data?.length || 0);
+      console.log('- Suppliers:', suppliersResponse.data?.length || 0);
+      console.log('- Booking Excursions:', bookingExcursionsResponse.data?.length || 0);
+
       console.log('Fetched booking excursions:', bookingExcursionsResponse.data?.length || 0);
       console.log('All booking excursions data:', bookingExcursionsResponse.data);
       
@@ -127,6 +137,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       setSuppliers(suppliersResponse.data);
     } catch (error) {
       console.error('Error fetching data:', error);
+      console.error('Full error object:', error);
     } finally {
       setLoading(false);
     }
