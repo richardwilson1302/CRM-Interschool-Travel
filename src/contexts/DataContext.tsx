@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import type { School, Trip, Booking, Excursion, Activity, Supplier, BookingExcursion } from '../types';
+import type { School, Trip, Booking, Excursion, Activity, Supplier, BookingExcursion, Quotation } from '../types';
 
 interface DataContextType {
   schools: School[];
@@ -9,6 +9,7 @@ interface DataContextType {
   excursions: Excursion[];
   activities: Activity[];
   suppliers: Supplier[];
+  quotations: Quotation[];
   loading: boolean;
   refreshData: () => Promise<void>;
   addSchool: (school: Omit<School, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
@@ -25,6 +26,9 @@ interface DataContextType {
   removeBookingExcursion: (id: string) => Promise<void>;
   deleteTrip: (id: string) => Promise<void>;
   addActivity: (activity: Omit<Activity, 'id' | 'created_at'>) => Promise<void>;
+  addQuotation: (quotation: Omit<Quotation, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<Quotation>;
+  updateQuotation: (id: string, updates: Partial<Quotation>) => Promise<void>;
+  deleteQuotation: (id: string) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -36,6 +40,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [excursions, setExcursions] = useState<Excursion[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
@@ -66,7 +71,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         excursionsResponse,
         activitiesResponse,
         suppliersResponse,
-        bookingExcursionsResponse
+        bookingExcursionsResponse,
+        quotationsResponse
       ] = await Promise.all([
         supabase.from('schools').select('*').order('name'),
         supabase.from('trips').select('*').order('departure_date'),
@@ -87,7 +93,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             *,
             supplier:suppliers(*)
           )
-        `)
+        `),
+        supabase.from('quotations').select('*').order('created_at', { ascending: false })
       ]);
 
       if (schoolsResponse.error) throw schoolsResponse.error;
@@ -97,6 +104,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (activitiesResponse.error) throw activitiesResponse.error;
       if (suppliersResponse.error) throw suppliersResponse.error;
       if (bookingExcursionsResponse.error) throw bookingExcursionsResponse.error;
+      if (quotationsResponse.error) throw quotationsResponse.error;
 
       console.log('Data fetch results:');
       console.log('- Schools:', schoolsResponse.data?.length || 0);
@@ -106,6 +114,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       console.log('- Activities:', activitiesResponse.data?.length || 0);
       console.log('- Suppliers:', suppliersResponse.data?.length || 0);
       console.log('- Booking Excursions:', bookingExcursionsResponse.data?.length || 0);
+      console.log('- Quotations:', quotationsResponse.data?.length || 0);
 
       console.log('Fetched booking excursions:', bookingExcursionsResponse.data?.length || 0);
       console.log('All booking excursions data:', bookingExcursionsResponse.data);
@@ -135,6 +144,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       setExcursions(excursionsResponse.data);
       setActivities(activitiesResponse.data);
       setSuppliers(suppliersResponse.data);
+      setQuotations(quotationsResponse.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
       console.error('Full error object:', error);
@@ -256,6 +266,33 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const addQuotation = async (quotationData: Omit<Quotation, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<Quotation> => {
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) throw new Error('User not authenticated');
+
+    const { data, error } = await supabase
+      .from('quotations')
+      .insert([{ ...quotationData, user_id: userData.user.id }])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    await refreshData();
+    return data;
+  };
+
+  const updateQuotation = async (id: string, updates: Partial<Quotation>) => {
+    const { error } = await supabase.from('quotations').update(updates).eq('id', id);
+    if (error) throw error;
+    await refreshData();
+  };
+
+  const deleteQuotation = async (id: string) => {
+    const { error } = await supabase.from('quotations').delete().eq('id', id);
+    if (error) throw error;
+    await refreshData();
+  };
+
   return (
     <DataContext.Provider value={{
       schools,
@@ -264,6 +301,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       excursions,
       activities,
       suppliers,
+      quotations,
       loading,
       refreshData,
       addSchool,
@@ -279,7 +317,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       addBookingExcursion,
       removeBookingExcursion,
       deleteTrip,
-      addActivity
+      addActivity,
+      addQuotation,
+      updateQuotation,
+      deleteQuotation
     }}>
       {children}
     </DataContext.Provider>

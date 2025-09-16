@@ -10,6 +10,7 @@ import SchoolDetail from './components/Schools/SchoolDetail';
 import TripDetail from './components/Trips/TripDetail';
 import BookingDetail from './components/Bookings/BookingDetail';
 import SupplierDetail from './components/Suppliers/SupplierDetail';
+import QuotationDetail from './components/Quotes/QuotationDetail';
 
 function ErrorFallback({error, resetErrorBoundary}: {error: Error, resetErrorBoundary: () => void}) {
   return (
@@ -52,6 +53,7 @@ function AppContent() {
           <Route path="/trips/:id" element={<TripDetail />} />
           <Route path="/bookings/:id" element={<BookingDetail />} />
           <Route path="/suppliers/:id" element={<SupplierDetail />} />
+          <Route path="/quotations/:id" element={<QuotationDetail />} />
         </Routes>
       </BrowserRouter>
     </DataProvider>

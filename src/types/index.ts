@@ -86,6 +86,51 @@ export type Activity = {
   user_id: string;
   created_at: string;
 };
+
+export type QuotationStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired';
+
+export type CostItem = {
+  id: string;
+  description: string;
+  estimatedPricePerUnit: number;
+  pricePerUnit: number;
+  unit: string;
+  quantityRequired: number;
+  daysRequired: number;
+  subtotal: number;
+  isFixed?: boolean;
+  manualSubtotal?: number;
+};
+
+export type Quotation = {
+  id: string;
+  school_name: string;
+  party_leader?: string;
+  destination: string;
+  accommodation?: string;
+  board?: string;
+  date_out_uk?: string;
+  date_back_uk?: string;
+  number_of_days: number;
+  number_of_nights: number;
+  pax: number;
+  free_places: number;
+  exchange_rate: number;
+  markup_amount: number;
+  total_cost: number;
+  net_total: number;
+  profit: number;
+  price_per_person: number;
+  profit_per_head: number;
+  ist_staff_qty: number;
+  cost_items: CostItem[];
+  status: QuotationStatus;
+  valid_until?: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Supplier = {
   id: string;
   name: string;

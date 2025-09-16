@@ -156,6 +156,38 @@ export interface Database {
         Insert: Omit<Database['public']['Tables']['activities']['Row'], 'id' | 'created_at'>;
         Update: Partial<Database['public']['Tables']['activities']['Insert']>;
       };
+      quotations: {
+        Row: {
+          id: string;
+          school_name: string;
+          party_leader?: string;
+          destination: string;
+          accommodation?: string;
+          board?: string;
+          date_out_uk?: string;
+          date_back_uk?: string;
+          number_of_days: number;
+          number_of_nights: number;
+          pax: number;
+          free_places: number;
+          exchange_rate: number;
+          markup_amount: number;
+          total_cost: number;
+          net_total: number;
+          profit: number;
+          price_per_person: number;
+          profit_per_head: number;
+          ist_staff_qty: number;
+          cost_items: any;
+          status: string;
+          valid_until?: string;
+          user_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Omit<Database['public']['Tables']['quotations']['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Database['public']['Tables']['quotations']['Insert']>;
+      };
     };
   };
 }
