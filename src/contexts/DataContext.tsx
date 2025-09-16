@@ -107,14 +107,17 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (bookingExcursionsResponse.error) throw bookingExcursionsResponse.error;
       
       // Handle quotations table error gracefully
+      let quotationsData = [];
       if (quotationsResponse.error) {
-        if (quotationsResponse.error.message.includes('Could not find the table') || 
-            quotationsResponse.error.code === 'PGRST205') {
-          console.warn('Quotations table not found - this is expected if you haven\'t run the migration yet:', quotationsResponse.error.message);
-          quotationsResponse.data = [];
+        if (quotationsResponse.error.code === 'PGRST205' || 
+            quotationsResponse.error.message?.includes('Could not find the table')) {
+          console.warn('Quotations table not found - this is expected if you haven\'t run the migration yet');
+          quotationsData = [];
         } else {
           throw quotationsResponse.error;
         }
+      } else {
+        quotationsData = quotationsResponse.data || [];
       }
 
       console.log('Data fetch results:');
@@ -155,7 +158,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       setExcursions(excursionsResponse.data);
       setActivities(activitiesResponse.data);
       setSuppliers(suppliersResponse.data);
-      setQuotations(quotationsResponse.data || []);
+      setQuotations(quotationsData);
     } catch (error) {
       console.error('Error fetching data:', error);
       console.error('Full error object:', error);
