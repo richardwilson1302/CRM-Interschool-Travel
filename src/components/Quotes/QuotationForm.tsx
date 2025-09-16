@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, Users, Calculator, Plus, Trash2, FileText, CheckCircle, Plane, X } from 'lucide-react';
-import { useData } from '../../contexts/DataContext';
-import { useAuth } from '../../contexts/AuthContext';
-import type { Quotation, CostItem } from '../../types';
+import type { CostItem } from '../../types';
 
 interface FormData {
   // Tour Details
@@ -38,16 +36,7 @@ interface FormData {
   istStaffQty: number;
 }
 
-interface QuotationFormProps {
-  quotation?: Quotation;
-  onClose?: () => void;
-  onSave?: () => void;
-}
-
-const QuotationForm: React.FC<QuotationFormProps> = ({ quotation, onClose, onSave }) => {
-  const { addQuotation, updateQuotation } = useData();
-  const { user } = useAuth();
-  const [saving, setSaving] = useState(false);
+const QuotationForm: React.FC = () => {
 
   // Predefined cost items that are always present
   const predefinedCostItems: CostItem[] = [
@@ -306,60 +295,29 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ quotation, onClose, onSav
     }
   ];
 
-  const [formData, setFormData] = useState<FormData>(() => {
-    if (quotation) {
-      // Initialize with existing quotation data
-      return {
-        schoolName: quotation.school_name,
-        partyLeader: quotation.party_leader || '',
-        destination: quotation.destination,
-        accommodation: quotation.accommodation || '',
-        board: quotation.board || '',
-        dateOutUK: quotation.date_out_uk || '',
-        dateBackUK: quotation.date_back_uk || '',
-        numberOfDays: quotation.number_of_days,
-        numberOfNights: quotation.number_of_nights,
-        pax: quotation.pax,
-        freePlaces: quotation.free_places,
-        exchangeRate: quotation.exchange_rate,
-        markupAmount: quotation.markup_amount,
-        costItems: quotation.cost_items.length > 0 ? quotation.cost_items : predefinedCostItems,
-        totalCost: quotation.total_cost,
-        netTotal: quotation.net_total,
-        profit: quotation.profit,
-        pricePerPerson: quotation.price_per_person,
-        profitPerHead: quotation.profit_per_head,
-        euroAmount: 0,
-        gbpAmount: 0,
-        istStaffQty: quotation.ist_staff_qty
-      };
-    } else {
-      // Initialize with default values
-      return {
-        schoolName: '',
-        partyLeader: '',
-        destination: '',
-        accommodation: '',
-        board: '',
-        dateOutUK: '',
-        dateBackUK: '',
-        numberOfDays: 0,
-        numberOfNights: 0,
-        pax: 0,
-        freePlaces: 0,
-        exchangeRate: 1.18,
-        markupAmount: 0,
-        costItems: predefinedCostItems,
-        totalCost: 0,
-        netTotal: 0,
-        profit: 0,
-        pricePerPerson: 0,
-        profitPerHead: 0,
-        euroAmount: 0,
-        gbpAmount: 0,
-        istStaffQty: 0
-      };
-    }
+  const [formData, setFormData] = useState<FormData>({
+    schoolName: '',
+    partyLeader: '',
+    destination: '',
+    accommodation: '',
+    board: '',
+    dateOutUK: '',
+    dateBackUK: '',
+    numberOfDays: 0,
+    numberOfNights: 0,
+    pax: 0,
+    freePlaces: 0,
+    exchangeRate: 1.18,
+    markupAmount: 0,
+    costItems: predefinedCostItems,
+    totalCost: 0,
+    netTotal: 0,
+    profit: 0,
+    pricePerPerson: 0,
+    profitPerHead: 0,
+    euroAmount: 0,
+    gbpAmount: 0,
+    istStaffQty: 0
   });
 
   const unitOptions = [
@@ -494,77 +452,12 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ quotation, onClose, onSav
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      alert('You must be logged in to save quotations');
-      return;
-    }
-
-    setSaving(true);
-    
-    try {
-      const quotationData = {
-        school_name: formData.schoolName,
-        party_leader: formData.partyLeader,
-        destination: formData.destination,
-        accommodation: formData.accommodation,
-        board: formData.board,
-        date_out_uk: formData.dateOutUK,
-        date_back_uk: formData.dateBackUK,
-        number_of_days: formData.numberOfDays,
-        number_of_nights: formData.numberOfNights,
-        pax: formData.pax,
-        free_places: formData.freePlaces,
-        exchange_rate: formData.exchangeRate,
-        markup_amount: formData.markupAmount,
-        total_cost: formData.totalCost,
-        net_total: formData.netTotal,
-        profit: formData.profit,
-        price_per_person: formData.pricePerPerson,
-        profit_per_head: formData.profitPerHead,
-        ist_staff_qty: formData.istStaffQty,
-        cost_items: formData.costItems,
-        status: 'draft' as const,
-        valid_until: formData.dateBackUK ? 
-          new Date(new Date(formData.dateBackUK).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : 
-          undefined
-      };
-
-      if (quotation) {
-        await updateQuotation(quotation.id, quotationData);
-      } else {
-        await addQuotation(quotationData);
-      }
-      
-      if (onSave) onSave();
-    } catch (error) {
-      console.error('Error saving quotation:', error);
-      if (error instanceof Error && error.message.includes('Quotations feature is not available')) {
-        alert('Quotations feature is not available. Please create the quotations table in your database first.');
-      } else {
-        alert('Error saving quotation. Please try again.');
-      }
-    } finally {
-      setSaving(false);
-    }
+    console.log('Quotation data:', formData);
+    alert('Quotation created successfully! (Demo mode - not saved to database)');
   };
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white">
-      {onClose && (
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
-            {quotation ? 'Edit Quotation' : 'Create New Quotation'}
-          </h1>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <X className="h-6 w-6" />
-          </button>
-        </div>
-      )}
-
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center">
           <Plane className="mr-3 text-blue-600" size={32} />
@@ -1001,15 +894,10 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ quotation, onClose, onSav
           <div className="flex flex-col md:flex-row gap-4">
             <button
               type="submit"
-              disabled={saving}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-md transition-colors duration-200 flex items-center justify-center disabled:opacity-50"
             >
-              {saving ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-              ) : (
-                <CheckCircle className="mr-2" size={20} />
-              )}
-              {saving ? 'Saving...' : quotation ? 'Update Quotation' : 'Save Quotation'}
+              <CheckCircle className="mr-2" size={20} />
+              Create Quotation
             </button>
             
             <button
