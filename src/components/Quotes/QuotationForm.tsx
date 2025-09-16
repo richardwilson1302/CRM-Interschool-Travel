@@ -539,7 +539,11 @@ const QuotationForm: React.FC<QuotationFormProps> = ({ quotation, onClose, onSav
       if (onSave) onSave();
     } catch (error) {
       console.error('Error saving quotation:', error);
-      alert('Error saving quotation. Please try again.');
+      if (error instanceof Error && error.message.includes('Quotations feature is not available')) {
+        alert('Quotations feature is not available. Please create the quotations table in your database first.');
+      } else {
+        alert('Error saving quotation. Please try again.');
+      }
     } finally {
       setSaving(false);
     }

@@ -281,6 +281,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addQuotation = async (quotationData: Omit<Quotation, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<Quotation> => {
+    // Check if quotations table exists
+    const { error: tableCheckError } = await supabase
+      .from('quotations')
+      .select('id')
+      .limit(1);
+    
+    if (tableCheckError && (tableCheckError.code === 'PGRST205' || tableCheckError.message?.includes('Could not find the table'))) {
+      throw new Error('Quotations feature is not available. Please create the quotations table in your database.');
+    }
+
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) throw new Error('User not authenticated');
 
@@ -296,12 +306,32 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateQuotation = async (id: string, updates: Partial<Quotation>) => {
+    // Check if quotations table exists
+    const { error: tableCheckError } = await supabase
+      .from('quotations')
+      .select('id')
+      .limit(1);
+    
+    if (tableCheckError && (tableCheckError.code === 'PGRST205' || tableCheckError.message?.includes('Could not find the table'))) {
+      throw new Error('Quotations feature is not available. Please create the quotations table in your database.');
+    }
+
     const { error } = await supabase.from('quotations').update(updates).eq('id', id);
     if (error) throw error;
     await refreshData();
   };
 
   const deleteQuotation = async (id: string) => {
+    // Check if quotations table exists
+    const { error: tableCheckError } = await supabase
+      .from('quotations')
+      .select('id')
+      .limit(1);
+    
+    if (tableCheckError && (tableCheckError.code === 'PGRST205' || tableCheckError.message?.includes('Could not find the table'))) {
+      throw new Error('Quotations feature is not available. Please create the quotations table in your database.');
+    }
+
     const { error } = await supabase.from('quotations').delete().eq('id', id);
     if (error) throw error;
     await refreshData();

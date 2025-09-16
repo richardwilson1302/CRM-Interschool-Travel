@@ -10,6 +10,9 @@ export default function QuotesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingQuotation, setEditingQuotation] = useState<Quotation | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  // Check if quotations are available
+  const quotationsAvailable = quotations.length > 0 || !loading;
+
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const filteredQuotes = quotations.filter(quote =>
@@ -31,100 +34,124 @@ export default function QuotesPage() {
       try {
         await deleteQuotation(id);
       } catch (error) {
-        console.error('Error deleting quotation:', error);
-        alert('Error deleting quotation. Please try again.');
-      } finally {
-        setDeletingId(null);
-      }
-    }
-  };
-
-  const generatePDF = (quotation: Quotation) => {
-    // Create a simple text-based quotation document
-    const content = `
-EDUCATIONAL TOUR QUOTATION
-
-School: ${quotation.school_name}
-Party Leader: ${quotation.party_leader || 'N/A'}
-Destination: ${quotation.destination}
-Accommodation: ${quotation.accommodation || 'N/A'}
-Board: ${quotation.board || 'N/A'}
-
-Travel Dates:
-Departure: ${quotation.date_out_uk ? new Date(quotation.date_out_uk).toLocaleDateString() : 'N/A'}
-Return: ${quotation.date_back_uk ? new Date(quotation.date_back_uk).toLocaleDateString() : 'N/A'}
-Duration: ${quotation.number_of_days} days, ${quotation.number_of_nights} nights
-
-Group Details:
-Total Participants: ${quotation.pax}
-Free Places: ${quotation.free_places}
-IST Staff: ${quotation.ist_staff_qty}
-
-Financial Summary:
-Total Cost: £${quotation.total_cost.toFixed(2)}
-Markup: £${quotation.markup_amount.toFixed(2)}
-Net Total: £${quotation.net_total.toFixed(2)}
-Price Per Person: £${quotation.price_per_person.toFixed(2)}
-Profit: £${quotation.profit.toFixed(2)}
-
-Valid Until: ${quotation.valid_until ? new Date(quotation.valid_until).toLocaleDateString() : 'N/A'}
-
-Generated on: ${new Date().toLocaleDateString()}
-    `.trim();
-
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `quotation-${quotation.school_name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.txt`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  if (showForm) {
-    return <QuotationForm onClose={() => setShowForm(false)} onSave={() => setShowForm(false)} />;
-  }
-
-  if (editingQuotation) {
-    return (
-      <QuotationForm 
-        quotation={editingQuotation}
-        onClose={() => setEditingQuotation(null)} 
-        onSave={() => setEditingQuotation(null)}
-      />
-    );
-  }
-
-  return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quotations</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Create and manage tour quotations for schools
+      {quotationsAvailable ? (
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-lg font-medium text-gray-900">All Quotations</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    School
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Destination
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Participants
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Price per Person
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Created
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {quotations.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                      <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <p className="text-lg font-medium mb-2">No quotations yet</p>
+                      <p>Create your first quotation to get started</p>
+                    </td>
+                  </tr>
+                ) : (
+                  quotations.map((quotation) => (
+                    <tr key={quotation.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Link
+                          to={`/quotations/${quotation.id}`}
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          {quotation.school_name}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {quotation.destination}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {quotation.pax}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        £{quotation.price_per_person.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        £{quotation.net_total.toLocaleString('en-GB', { minimumFractionDigits: 2 })}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          quotation.status === 'draft' ? 'bg-gray-100 text-gray-800' :
+                          quotation.status === 'sent' ? 'bg-blue-100 text-blue-800' :
+                          quotation.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {quotation.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(quotation.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                        <button
+                          onClick={() => handleEdit(quotation)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button className="text-green-600 hover:text-green-800">
+                          <Download className="h-4 w-4" />
+                        </button>
+                        <button className="text-red-600 hover:text-red-800">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white shadow rounded-lg p-8 text-center">
+          <FileText className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Quotations Feature Not Available</h3>
+          <p className="text-gray-600 mb-4">
+            The quotations table needs to be created in your Supabase database to use this feature.
           </p>
+          <div className="bg-gray-50 rounded-lg p-4 text-left">
+            <p className="text-sm text-gray-700 mb-2">To enable quotations:</p>
+            <ol className="text-sm text-gray-600 list-decimal list-inside space-y-1">
+              <li>Go to your Supabase project dashboard</li>
+              <li>Navigate to the SQL Editor</li>
+              <li>Run the quotations table migration script</li>
+            </ol>
+          </div>
         </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          New Quote
-        </button>
-      </div>
-
-      <div className="mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search quotes by school name or destination..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-      </div>
+      )}
 
       {filteredQuotes.length === 0 ? (
         <div className="text-center py-12">
