@@ -1,14 +1,22 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "interschool-travel-crm",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A comprehensive CRM system for educational travel companies",
+  "keywords": ["crm", "education", "travel", "booking", "react", "typescript"],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/interschool-travel-crm.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:netlify": "npm run build && cp public/_redirects dist/"
+    "build:netlify": "npm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.56.1",
