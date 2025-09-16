@@ -34,6 +34,59 @@ export default function QuotesPage() {
       try {
         await deleteQuotation(id);
       } catch (error) {
+        console.error('Error deleting quotation:', error);
+      } finally {
+        setDeletingId(null);
+      }
+    }
+  };
+
+  const handleEdit = (quotation: Quotation) => {
+    setEditingQuotation(quotation);
+    setShowForm(true);
+  };
+
+  const generatePDF = (quote: Quotation) => {
+    // PDF generation logic
+    console.log('Generating PDF for:', quote.school_name);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Quotations</h1>
+        <button
+          onClick={() => setShowForm(true)}
+          className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          New Quote
+        </button>
+      </div>
+
+      <div className="flex items-center space-x-4">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <input
+            type="text"
+            placeholder="Search by school name or destination..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+      </div>
+
+      {showForm && (
+        <QuotationForm
+          quotation={editingQuotation}
+          onClose={() => {
+            setShowForm(false);
+            setEditingQuotation(null);
+          }}
+        />
+      )}
+
       {quotationsAvailable ? (
         <div className="bg-white shadow rounded-lg">
           <div className="px-6 py-4 border-b border-gray-200">
