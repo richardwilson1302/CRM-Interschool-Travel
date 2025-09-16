@@ -94,7 +94,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
             supplier:suppliers(*)
           )
         `),
-        supabase.from('quotations').select('*').order('created_at', { ascending: false })
+        // Handle quotations table that might not exist yet
+        supabase.from('quotations').select('*').order('created_at', { ascending: false }).then(
+          response => response,
+          error => {
+            console.warn('Quotations table not found - this is expected if you haven\'t run the migration yet:', error.message);
+            return { data: [], error: null };
+          }
+        )
       ]);
 
       if (schoolsResponse.error) throw schoolsResponse.error;
@@ -104,7 +111,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (activitiesResponse.error) throw activitiesResponse.error;
       if (suppliersResponse.error) throw suppliersResponse.error;
       if (bookingExcursionsResponse.error) throw bookingExcursionsResponse.error;
-      if (quotationsResponse.error) throw quotationsResponse.error;
+      // Don't throw error for quotations if table doesn't exist
+      if (quotationsResponse.error && !quotationsResponse.error.message.includes('Could not find the table')) {
+        throw quotationsResponse.error;
+      }
 
       console.log('Data fetch results:');
       console.log('- Schools:', schoolsResponse.data?.length || 0);
