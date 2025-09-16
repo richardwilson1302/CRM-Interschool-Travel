@@ -581,13 +581,13 @@ const QuotationForm: React.FC = () => {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Your Tour Details Section */}
-        <div className="bg-blue-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-blue-900 mb-6 flex items-center">
+        <div className="bg-blue-50 rounded-lg p-6 print-section">
+          <h2 className="text-xl font-bold text-blue-900 mb-6 flex items-center print-section-title">
             <Users className="mr-2" size={24} />
             Your Tour Details
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 print-grid">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">School Name</label>
               <input
@@ -750,16 +750,16 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Cost Breakdown Section */}
-        <div className="bg-green-50 rounded-lg p-6">
+        <div className="bg-green-50 rounded-lg p-6 print-section">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-green-900 flex items-center">
+            <h2 className="text-xl font-bold text-green-900 flex items-center print-section-title">
               <Calculator className="mr-2" size={24} />
               Cost Breakdown
             </h2>
             <button
               type="button"
               onClick={addCostItem}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center transition-colors duration-200"
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center transition-colors duration-200 no-print"
             >
               <Plus className="mr-1" size={16} />
               Add Item
@@ -767,7 +767,7 @@ const QuotationForm: React.FC = () => {
           </div>
           
           <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-lg shadow-sm border border-gray-200">
+            <table className="w-full bg-white rounded-lg shadow-sm border border-gray-200 print-table">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">Item Description</th>
@@ -874,7 +874,7 @@ const QuotationForm: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => removeCostItem(item.id)}
-                          className="text-red-600 hover:text-red-800 transition-colors duration-200"
+                          className="text-red-600 hover:text-red-800 transition-colors duration-200 no-print"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -888,13 +888,13 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Calculations Section */}
-        <div className="bg-yellow-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-yellow-900 mb-6 flex items-center">
+        <div className="bg-yellow-50 rounded-lg p-6 print-section">
+          <h2 className="text-xl font-bold text-yellow-900 mb-6 flex items-center print-section-title">
             <Calculator className="mr-2" size={24} />
             Calculations
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 print-summary-grid">
             <div className="bg-white p-4 rounded-lg border border-yellow-200">
               <label className="block text-sm font-medium text-gray-700 mb-2">Total Cost</label>
               <div className="text-2xl font-bold text-gray-900">
@@ -942,13 +942,13 @@ const QuotationForm: React.FC = () => {
         </div>
 
         {/* Currency Converter Section */}
-        <div className="bg-purple-50 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-purple-900 mb-6 flex items-center">
+        <div className="bg-purple-50 rounded-lg p-6 print-section">
+          <h2 className="text-xl font-bold text-purple-900 mb-6 flex items-center print-section-title">
             <Calculator className="mr-2" size={24} />
             Currency Converter
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 print-grid">
             <div className="bg-white p-4 rounded-lg border border-purple-200">
               <label className="block text-sm font-medium text-gray-700 mb-2">Amount in Pounds (£)</label>
               <input
