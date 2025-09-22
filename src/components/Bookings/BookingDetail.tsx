@@ -99,8 +99,13 @@ export default function BookingDetail() {
                   <div className="flex items-center text-sm">
                     <Users className="h-4 w-4 mr-3 text-gray-400" />
                     <div>
-                      <div className="font-medium text-gray-900">Participants</div>
-                      <div className="text-gray-600">{booking.participant_count}</div>
+                      <div className="font-medium text-gray-900">PAX</div>
+                      <div className="text-gray-600">
+                        {booking.participant_count} total
+                        {booking.free_pax && booking.free_pax > 0 && (
+                          <span className="text-green-600"> ({booking.free_pax} free, {booking.participant_count - booking.free_pax} paying)</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   

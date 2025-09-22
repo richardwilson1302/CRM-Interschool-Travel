@@ -170,6 +170,18 @@ export default function SchoolDetail() {
                     {schoolBookings.reduce((sum, b) => sum + b.participant_count, 0)}
                   </span>
                 </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Free PAX</span>
+                  <span className="text-lg font-semibold text-green-600">
+                    {schoolBookings.reduce((sum, b) => sum + (b.free_pax || 0), 0)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Paying PAX</span>
+                  <span className="text-lg font-semibold text-purple-600">
+                    {schoolBookings.reduce((sum, b) => sum + (b.participant_count - (b.free_pax || 0)), 0)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

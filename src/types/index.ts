@@ -36,6 +36,7 @@ export type Booking = {
   trip_id: string;
   status: BookingStatus;
   participant_count: number;
+  free_pax: number;
   total_price: number;
   special_requirements?: string;
   contact_email: string;

@@ -130,7 +130,12 @@ export default function BookingsList() {
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center text-gray-600">
                     <Users className="h-4 w-4 mr-2 text-gray-400" />
-                    <span>{booking.participant_count} participants</span>
+                    <span>
+                      {booking.participant_count} PAX
+                      {booking.free_pax && booking.free_pax > 0 && (
+                        <span className="text-green-600"> ({booking.free_pax} free)</span>
+                      )}
+                    </span>
                   </div>
                   <div className="flex items-center text-gray-900 font-semibold">
                     <span>£{booking.total_price.toLocaleString()}</span>

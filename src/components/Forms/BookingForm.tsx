@@ -14,6 +14,7 @@ export default function BookingForm({ onClose }: BookingFormProps) {
     trip_id: '',
     status: 'enquiry' as const,
     participant_count: 1,
+    free_pax: 0,
     total_price: 0,
     special_requirements: '',
     contact_email: '',
@@ -25,12 +26,13 @@ export default function BookingForm({ onClose }: BookingFormProps) {
 
   React.useEffect(() => {
     if (selectedTrip) {
+      const payingParticipants = formData.participant_count - formData.free_pax;
       setFormData(prev => ({
         ...prev,
-        total_price: selectedTrip.base_price * prev.participant_count
+        total_price: selectedTrip.base_price * Math.max(0, payingParticipants)
       }));
     }
-  }, [selectedTrip, formData.participant_count]);
+  }, [selectedTrip, formData.participant_count, formData.free_pax]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +127,7 @@ export default function BookingForm({ onClose }: BookingFormProps) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Participants*</label>
+              <label className="block text-sm font-medium text-gray-700">PAX*</label>
               <input
                 type="number"
                 name="participant_count"
@@ -135,6 +137,27 @@ export default function BookingForm({ onClose }: BookingFormProps) {
                 onChange={handleChange}
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Free PAX</label>
+              <input
+                type="number"
+                name="free_pax"
+                min="0"
+                max={formData.participant_count}
+                value={formData.free_pax}
+                onChange={handleChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Paying PAX</label>
+              <div className="mt-1 py-2 px-3 bg-gray-100 border border-gray-300 rounded-md text-gray-900 font-medium">
+                {Math.max(0, formData.participant_count - formData.free_pax)}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Total Price (£)</label>
