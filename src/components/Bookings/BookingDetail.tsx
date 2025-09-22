@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
-import { ArrowLeft, Calendar, Users, Phone, Mail, MapPin, Edit, DollarSign } from 'lucide-react';
+import { ArrowLeft, Calendar, Users, Phone, Mail, MapPin, Edit, DollarSign, User } from 'lucide-react';
 import EditBookingForm from '../Forms/EditBookingForm';
 import ActivityLog from '../Activities/ActivityLog';
 import { statusColors, statusLabels } from '../../utils/constants';
@@ -117,6 +117,14 @@ export default function BookingDetail() {
                     </div>
                   </div>
 
+                  <div className="flex items-center text-sm">
+                    <User className="h-4 w-4 mr-3 text-gray-400" />
+                    <div>
+                      <div className="font-medium text-gray-900">Contact Name</div>
+                      <div className="text-gray-600">{booking.contact_name || 'Not specified'}</div>
+                    </div>
+                  </div>
+                  
                   <div className="flex items-center text-sm">
                     <Mail className="h-4 w-4 mr-3 text-gray-400" />
                     <div>

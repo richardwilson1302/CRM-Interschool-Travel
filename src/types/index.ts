@@ -41,6 +41,7 @@ export type Booking = {
   special_requirements?: string;
   contact_email: string;
   contact_phone: string;
+  contact_name?: string;
   notes?: string;
   created_at: string;
   updated_at: string;

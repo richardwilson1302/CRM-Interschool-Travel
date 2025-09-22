@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../contexts/DataContext';
-import { Calendar, Users, Phone, Mail, MapPin, Plus, Search, DollarSign, Edit } from 'lucide-react';
+import { Calendar, Users, Phone, Mail, MapPin, Plus, Search, DollarSign, Edit, User } from 'lucide-react';
 import BookingForm from '../Forms/BookingForm';
 import EditBookingForm from '../Forms/EditBookingForm';
 import { statusColors, statusLabels } from '../../utils/constants';
@@ -143,6 +143,12 @@ export default function BookingsList() {
                 </div>
                 
                 <div className="flex items-center text-sm text-gray-600">
+                  {booking.contact_name && (
+                    <div className="flex items-center text-sm text-gray-600 mb-1">
+                      <User className="h-4 w-4 mr-2 text-gray-400" />
+                      <span>{booking.contact_name}</span>
+                    </div>
+                  )}
                   <Mail className="h-4 w-4 mr-2 text-gray-400" />
                   <a href={`mailto:${booking.contact_email}`} className="hover:text-blue-600 truncate">
                     {booking.contact_email}
