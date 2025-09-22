@@ -88,8 +88,8 @@ export default function EditBookingForm({ bookingId, onClose }: EditBookingFormP
     setLoading(true);
 
     try {
-      // Temporarily exclude free_pax until database column is added
-      const { free_pax, ...updateData } = formData;
+      // Temporarily exclude contact_name until database column is added
+      const { contact_name, free_pax, ...updateData } = formData;
       await updateBooking(bookingId, updateData);
       onClose();
     } catch (error) {

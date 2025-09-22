@@ -40,8 +40,8 @@ export default function BookingForm({ onClose }: BookingFormProps) {
     setLoading(true);
 
     try {
-      // Temporarily exclude free_pax until database column is added
-      const { free_pax, ...createData } = formData;
+      // Temporarily exclude contact_name and free_pax until database columns are added
+      const { contact_name, free_pax, ...createData } = formData;
       await addBooking(createData);
       onClose();
     } catch (error) {
