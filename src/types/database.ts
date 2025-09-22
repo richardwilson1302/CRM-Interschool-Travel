@@ -44,6 +44,7 @@ export interface Database {
           trip_id: string;
           status: 'enquiry' | 'quoted' | 'quote_follow_up' | 'quote_lost' | 'confirmed' | 'paid' | 'completed' | 'cancelled';
           participant_count: number;
+          free_pax?: number;
           total_price: number;
           special_requirements?: string;
           contact_email: string;
