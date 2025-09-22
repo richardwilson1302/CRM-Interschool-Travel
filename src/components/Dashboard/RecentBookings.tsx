@@ -115,7 +115,12 @@ export default function RecentBookings() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center text-sm text-gray-900">
                         <Users className="h-4 w-4 mr-1 text-gray-400" />
-                        {booking.participant_count}
+                        <div>
+                          {booking.participant_count}
+                          {booking.free_pax && booking.free_pax > 0 && (
+                            <div className="text-xs text-green-600">({booking.free_pax} free)</div>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
