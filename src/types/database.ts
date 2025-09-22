@@ -49,6 +49,7 @@ export interface Database {
           contact_email: string;
           contact_phone: string;
           notes?: string;
+          contact_name?: string;
           created_at: string;
           updated_at: string;
         };
