@@ -41,8 +41,7 @@ export default function BookingForm({ onClose }: BookingFormProps) {
 
     try {
       // Temporarily exclude contact_name and free_pax until database columns are added
-      const { contact_name, free_pax, ...createData } = formData;
-      await addBooking(createData);
+      await addBooking(formData);
       onClose();
     } catch (error) {
       console.error('Error adding booking:', error);
