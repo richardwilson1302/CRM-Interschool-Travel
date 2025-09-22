@@ -225,7 +225,7 @@ export default function BookingDetail() {
                     to={`/schools/${booking.school.id}`}
                     className="block text-sm text-blue-600 hover:text-blue-800 hover:underline"
                   >
-                    View School Details →
+                    ← Back to {booking.school.name}
                   </Link>
                 )}
                 {booking.trip && (

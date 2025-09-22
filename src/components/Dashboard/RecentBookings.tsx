@@ -67,14 +67,19 @@ export default function RecentBookings() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <Link
-                          to={`/bookings/${booking.id}`}
+                          to={`/schools/${booking.school_id}`}
                           className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
                         >
                           {booking.school?.name || 'Unknown School'}
                         </Link>
                         <div className="text-sm text-gray-500 flex items-center">
                           <MapPin className="h-3 w-3 mr-1" />
-                          {booking.trip?.destination || 'Unknown Trip'}
+                          <Link
+                            to={`/bookings/${booking.id}`}
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            {booking.trip?.destination || 'Unknown Trip'}
+                          </Link>
                         </div>
                       </div>
                     </td>
