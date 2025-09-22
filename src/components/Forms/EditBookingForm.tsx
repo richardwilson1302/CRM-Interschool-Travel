@@ -88,7 +88,9 @@ export default function EditBookingForm({ bookingId, onClose }: EditBookingFormP
     setLoading(true);
 
     try {
-      await updateBooking(bookingId, formData);
+      // Temporarily exclude contact_name until database column is added
+      const { contact_name, ...updateData } = formData;
+      await updateBooking(bookingId, updateData);
       onClose();
     } catch (error) {
       console.error('Error updating booking:', error);

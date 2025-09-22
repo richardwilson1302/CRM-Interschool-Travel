@@ -40,7 +40,9 @@ export default function BookingForm({ onClose }: BookingFormProps) {
     setLoading(true);
 
     try {
-      await addBooking(formData);
+      // Temporarily exclude contact_name until database column is added
+      const { contact_name, ...createData } = formData;
+      await addBooking(createData);
       onClose();
     } catch (error) {
       console.error('Error adding booking:', error);
